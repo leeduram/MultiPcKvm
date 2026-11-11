@@ -42,7 +42,7 @@ namespace MultiPcKvm.Wpf
     //    쓰는 동안에도 메모장으로 열어 볼 수 있게 공유 모드로 연다.
     //
     //  ─── 콘솔 출력도 여기로 모은다 ───
-    //    김기령님 코드(검색·연결·영상·파일)와 KvmSession 은 기록을 Console.WriteLine 으로 남긴다.
+    //    팀원 코드(검색·연결·영상·파일)와 KvmSession 은 기록을 Console.WriteLine 으로 남긴다.
     //    WPF 프로그램(exe)에는 콘솔 창이 없어서 그 기록이 아무 데도 안 남았다.
     //    그래서 콘솔 출력을 받아서 "[콘솔] ..." 으로 이 파일에 같이 적는다. (ConsoleToLog)
     //
@@ -73,7 +73,7 @@ namespace MultiPcKvm.Wpf
         {
             EnsureWriter();
 
-            // 콘솔 출력(김기령님 코드 등)도 이 파일로 모은다. (위 설명)
+            // 콘솔 출력(팀원 코드 등)도 이 파일로 모은다. (위 설명)
             try
             {
                 Console.SetOut(new ConsoleToLog());

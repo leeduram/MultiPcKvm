@@ -43,7 +43,7 @@
     <ProjectReference Include="..\MultiPcKvm.App\MultiPcKvm.App.csproj" />
     <ProjectReference Include="..\MultiPcKvm.Common\MultiPcKvm.Common.csproj" />
     <ProjectReference Include="..\MultiPcKvm.Network\MultiPcKvm.Network.csproj" />
-    <!-- 화면 보기·파일 전송 (김기령님). ScreenShareFactory 에서 만든다. -->
+    <!-- 화면 보기·파일 전송 (팀원). ScreenShareFactory 에서 만든다. -->
     <ProjectReference Include="..\MultiPcKvm.Video\MultiPcKvm.Video.csproj" />
     <ProjectReference Include="..\MultiPcKvm.Windows\MultiPcKvm.Windows.csproj" />
   </ItemGroup>

@@ -21,7 +21,7 @@ namespace MultiPcKvm.Wpf
     //  조종당하는 쪽: 켤 때 화면 보내기(IScreenSharer)를 준비하고,
     //                 "지금 나를 조종 중인 PC" 가 요청할 때만 허락한다. (CanViewScreen)
     //
-    //  영상 자체(캡처·인코딩·전송)는 김기령님 MultiPcKvm.Video 가 한다.
+    //  영상 자체(캡처·인코딩·전송)는 팀원 MultiPcKvm.Video 가 한다.
     //  약속은 MultiPcKvm.Common 의 ScreenShare.cs, 만드는 곳은 ScreenShareFactory.cs.
     //
     //  MainWindow 는 할 일이 많아서 주제별로 파일을 나눴다. (partial = 한 클래스를 여러 파일에 나눠 쓰기)

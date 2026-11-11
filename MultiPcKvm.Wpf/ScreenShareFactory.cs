@@ -3,7 +3,7 @@ using MultiPcKvm.Common;
 namespace MultiPcKvm.Wpf
 {
     // ─────────────────────────────────────────────────────────────
-    //  화면 보기·파일 전송 기능을 만드는 곳. (김기령님 MultiPcKvm.Video 와 WPF 를 잇는 한 지점)
+    //  화면 보기·파일 전송 기능을 만드는 곳. (팀원 MultiPcKvm.Video 와 WPF 를 잇는 한 지점)
     //
     //    ScreenViewer       : 조종하는 쪽. 상대 화면 받기 (45002)
     //    ScreenSharer       : 조종당하는 쪽. 내 화면 보내기 (45002)

@@ -29,7 +29,7 @@ namespace MultiPcKvm.Wpf
     //      화면 보기 없이 B 의 모니터를 직접 보면서 평소처럼 커서를 넘겨 골라도 된다.
     //    → B 가 고른 파일을 A 로 보낸다 → A 의 "다운로드\MultiPcKvm" 폴더에 저장된다
     //
-    //  파일 데이터를 실제로 주고받는 것은 김기령님 파일 전송 기능(IFileTransfer)이 한다.
+    //  파일 데이터를 실제로 주고받는 것은 팀원 파일 전송 기능(IFileTransfer)이 한다.
     //  약속은 MultiPcKvm.Common 의 FileTransfer.cs, 만드는 곳은 ScreenShareFactory.cs.
     //  여기는 허락 여부, 저장 위치, 진행 표시만 맡는다.
     //
@@ -426,7 +426,7 @@ namespace MultiPcKvm.Wpf
                 Height = 1,
 
                 // 반드시 "주 모니터" 가운데에 띄운다.
-                // 화면 보기는 주 모니터만 보내므로(김기령님 ScreenSharer), 다른 모니터에 뜨면 조종하는 사람이 못 본다.
+                // 화면 보기는 주 모니터만 보내므로(팀원 ScreenSharer), 다른 모니터에 뜨면 조종하는 사람이 못 본다.
                 // (CenterScreen 은 마우스가 있는 모니터에 띄울 수 있어서 쓰지 않는다)
                 WindowStartupLocation = WindowStartupLocation.Manual,
                 Left = SystemParameters.PrimaryScreenWidth / 2,

@@ -11,7 +11,7 @@ namespace MultiPcKvm.App.Storage
     //    · 그래도 외래키·CHECK 같은 제약을 DB 가 직접 지켜준다.
     //
     //  파일 위치: %AppData%\MultiPcKvm\kvm.db
-    //    김기령님 DeviceIdentity 의 device-id.txt 와 같은 폴더다.
+    //    팀원 DeviceIdentity 의 device-id.txt 와 같은 폴더다.
     //    Program Files 에 두면 안 되는 이유: 일반 권한으로는 거기 쓰기가 막힌다.
     //
     //  이 클래스가 하는 일은 두 가지뿐이다.

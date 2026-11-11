@@ -415,7 +415,7 @@ namespace MultiPcKvm.Wpf
         // 64비트 값을 담은 메시지를 보낸다. (Hello, 열쇠)
         //
         // PeerConnection 이 종류를 보고 알아서 TCP 로 보낸다.
-        // (12~15 번은 김기령님이 PeerConnection 의 TCP 목록에 추가해 줬다.
+        // (12~15 번은 팀원이 PeerConnection 의 TCP 목록에 추가해 줬다.
         //  그 전에는 목록에 없어서 _peer.Tcp.SendAsync 로 우회해 보냈다)
         private async Task SendPairMessageAsync(MessageType type, long value)
         {

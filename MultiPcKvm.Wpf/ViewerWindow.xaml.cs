@@ -143,7 +143,7 @@ namespace MultiPcKvm.Wpf
             if (_viewer == null)
             {
                 StatusText.Text = "영상 기능이 아직 연결되지 않았습니다.\n" +
-                                  "(김기령님 영상 기능이 들어오면 여기에 상대 화면이 나옵니다)";
+                                  "(팀원 영상 기능이 들어오면 여기에 상대 화면이 나옵니다)";
                 return;
             }
 

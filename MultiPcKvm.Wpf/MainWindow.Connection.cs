@@ -214,7 +214,7 @@ namespace MultiPcKvm.Wpf
                 // TCP 한 줄에는 방향이 없다. 누가 걸었든 양쪽 다 보낼 수 있다.
                 // 그러니 있는 줄을 그대로 쓰면 된다.
                 //
-                // ※ 지금은 김기령님 TcpTransport 도 "이미 연결돼 있으면 안 끊음" 으로
+                // ※ 지금은 팀원 TcpTransport 도 "이미 연결돼 있으면 안 끊음" 으로
                 //    바뀌어서 이 검사가 없어도 줄이 죽지 않는다. 이중 안전장치로 둔다.
                 if (!_peer.IsTcpConnected)
                 {

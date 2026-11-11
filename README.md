@@ -1,6 +1,6 @@
 # Windows 멀티 PC 통합 제어 및 원격 프로그램 (MultiPcKvm)
 
-이두람 · 김기령 (2인 팀 프로젝트, 2026년 2학기)
+2인 팀 프로젝트 (2026년 2학기). 아래 구조에서 "본인"은 이 저장소 주인, "팀원"은 함께 만든 팀원이다.
 
 같은 네트워크(공유기·랜선 직결)에 있는 Windows PC 두 대를 키보드·마우스 하나로 조종한다.
 커서를 화면 끝으로 밀면 상대 PC 로 넘어가고, 상대 화면을 창으로 보면서 조종하거나 파일을 주고받을 수 있다.
@@ -16,32 +16,32 @@ MultiPcKvm
 │   ├─ 파일 전송 약속 (FileTransfer.cs: IFileTransfer)
 │   └─ 상수 (Constants.cs: 포트)
 │
-├─ MultiPcKvm.Network    ← 김기령
+├─ MultiPcKvm.Network    ← 팀원
 │   ├─ LAN 검색 (Broadcast + 망별 Broadcast + 같은 망 직접 탐색, 최근 기기 직접 확인)
 │   ├─ TCP/UDP 전송
 │   ├─ 연결 관리 (동시 연결·제3자 연결 처리)
 │   ├─ 어댑터 지정 (LocalRoutes, 169.254 다중 어댑터)
 │   └─ 기기 ID (DeviceIdentity)
 │
-├─ MultiPcKvm.Video      ← 김기령
+├─ MultiPcKvm.Video      ← 팀원
 │   ├─ 화면 보기 (ScreenSharer / ScreenViewer, 45002 TCP, GDI 캡처 + 바뀐 칸만 Deflate 압축)
 │   └─ 파일 전송 (FileTransferEngine, 45003 TCP, 1MB 조각 · SHA-256 확인)
 │
-├─ MultiPcKvm.Windows    ← 이두람
+├─ MultiPcKvm.Windows    ← 본인
 │   ├─ 키보드·마우스 후킹 (Low-Level Hook, 삼키기, 자동 복구)
 │   └─ 입력 실행 (SendInput, 휠 포함)
 │
-├─ MultiPcKvm.App        ← 이두람 (라이브러리)
+├─ MultiPcKvm.App        ← 본인 (라이브러리)
 │   ├─ 조종 세션 (KvmSession: 보내기·받기·연결 확인)
 │   ├─ 커서 넘기기 (InputRouter, ScreenLayout: 화면 배치)
 │   ├─ 저장된 기기 열쇠 (PairToken)
 │   ├─ 받은 파일 이름 거르기 (ReceivedFileName)
 │   └─ 로컬 DB (Storage: SQLite, 저장된 기기·배치·설정·연결 기록)
 │
-├─ MultiPcKvm.Tests      ← 이두람 (저장소 검사, 배포에 안 들어감)
+├─ MultiPcKvm.Tests      ← 본인 (저장소 검사, 배포에 안 들어감)
 │   └─ DeviceRepository 검사 (임시 DB 에서 200·201·400·403·404·409·500 확인)
 │
-└─ MultiPcKvm.Wpf        ← 이두람 (실행 프로그램)
+└─ MultiPcKvm.Wpf        ← 본인 (실행 프로그램)
     ├─ 메인 창 (기기 목록, 연결 코드 4자리, 화면 배치, 설정, 방화벽)
     ├─ 화면 보기 창 (전체 화면, 파일 보내기·받기)
     ├─ 트레이 · 자동 실행 · 관리자 권한
