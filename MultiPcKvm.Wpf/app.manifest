@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+
+  <assemblyIdentity version="1.0.0.0" name="MultiPcKvm.Wpf" />
+
+  <!-- ─────────────────────────────────────────────────────────
+       실행 권한
+
+       asInvoker = 평소에는 일반 권한으로 실행한다.
+
+       관리자 권한이 필요한 경우는 "상대 PC 에서 관리자 권한으로
+       실행 중인 창" 을 조작할 때뿐이라 흔하지 않다.
+       항상 관리자로 켜면 매번 UAC 창이 뜨고 드래그 앤 드롭 같은
+       기능도 막히므로, 필요할 때만 올리는 쪽이 낫다.
+
+       나중에 설정 화면에서 "관리자 권한으로 다시 시작" 을 만들 예정.
+       ───────────────────────────────────────────────────────── -->
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
+  <!-- 이 프로그램이 Windows 10/11 을 지원한다고 알린다.
+       이걸 안 적으면 Windows 가 옛날 프로그램으로 취급해서
+       화면 크기 등을 호환 모드 값으로 속여서 알려준다. -->
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
+    </application>
+  </compatibility>
+
+  <!-- ─────────────────────────────────────────────────────────
+       화면 배율 (DPI)
+
+       ★ 이게 없으면 마우스 좌표가 어긋난다.
+
+       Windows 는 배율을 모르는 프로그램에게 화면 크기를
+       배율만큼 줄여서 알려준다.
+       예) 1920×1080 화면을 125% 로 쓰면 → 1536×864 라고 답한다.
+
+       그런데 마우스 후킹은 항상 실제 픽셀 좌표를 준다.
+       이 둘이 섞이면 커서가 화면 끝에 닿아도 경계 판정이 안 되거나,
+       상대 화면의 일부에 도달하지 못한다.
+
+       PerMonitorV2 = "배율은 내가 알아서 처리할 테니 속이지 말고
+                      실제 값을 달라". 모니터마다 배율이 다른 경우도 따라간다.
+       ───────────────────────────────────────────────────────── -->
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2</dpiAwareness>
+    </windowsSettings>
+  </application>
+
+</assembly>

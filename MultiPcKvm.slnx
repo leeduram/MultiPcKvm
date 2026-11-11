@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/솔루션 항목/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="MultiPcKvm.App/MultiPcKvm.App.csproj" />
+  <Project Path="MultiPcKvm.Common/MultiPcKvm.Common.csproj" />
+  <Project Path="MultiPcKvm.Network/MultiPcKvm.Network.csproj" />
+  <Project Path="MultiPcKvm.Tests/MultiPcKvm.Tests.csproj" />
+  <Project Path="MultiPcKvm.Video/MultiPcKvm.Video.csproj" Id="a799b008-46ae-4eaf-a5ff-e3d8994740a4" />
+  <Project Path="MultiPcKvm.Windows/MultiPcKvm.Windows.csproj" />
+  <Project Path="MultiPcKvm.Wpf/MultiPcKvm.Wpf.csproj" Id="b225197d-40fc-4755-a47f-477014679ed5" />
+</Solution>

@@ -1,0 +1,133 @@
+<Window x:Class="MultiPcKvm.Wpf.ViewerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="화면 보기"
+        Height="640" Width="960"
+        WindowStartupLocation="CenterScreen"
+        Background="Black"
+        Activated="Window_Activated"
+        Deactivated="Window_Deactivated"
+        SourceInitialized="Window_SourceInitialized"
+        Closed="Window_Closed">
+
+    <!--
+        상대 PC 화면 보기 창
+
+        영상(김기령님 IScreenViewer)이 보내주는 화면을 창 크기에 맞춰 그린다. (비율 유지)
+        화면 위에서 마우스를 움직이거나 누르거나 휠을 굴리면 상대 화면의 같은 위치로 보낸다.
+        이 창을 선택한 상태에서 키보드를 치면 상대에게 간다. (Alt+Tab·Windows 키 포함)
+
+        위쪽 줄: [전체 화면] [파일 보내기] [파일 받기] + 파일 전송 상태
+        전체 화면에서는 위쪽 줄을 숨기고, 화면 맨 위 가운데에 작은 막대를 띄운다.
+        (키보드는 전부 상대에게 가므로 F11·Esc 로 빠져나올 수 없다. 그래서 버튼으로만 나온다)
+
+        동작은 ViewerWindow.xaml.cs 에 있다.
+    -->
+
+    <Window.Resources>
+        <!-- 위쪽 줄·막대의 버튼 모양 -->
+        <Style x:Key="BarButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#374151" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="12,5" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <!-- 버튼을 눌러도 키보드 초점을 가져가지 않는다.
+                 (초점이 버튼에 가 있으면 Space·Enter 가 버튼을 또 누를 수 있다. 키보드는 상대 PC 몫이다) -->
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#4B5563" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#6B7280" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />  <!-- 0: 위쪽 줄 (창 모드에서만) -->
+            <RowDefinition Height="*" />     <!-- 1: 상대 화면 -->
+        </Grid.RowDefinitions>
+
+        <!-- ── 위쪽 줄 (창 모드) ── -->
+        <Border x:Name="TopBar" Grid.Row="0" Background="#1F2937" Padding="8,6">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <Button Content="전체 화면" Style="{StaticResource BarButton}" Click="FullScreen_Click"
+                            ToolTip="화면 전체로 크게 봅니다. 맨 위 가운데 막대의 [창 모드] 로 돌아옵니다." />
+                    <Button Content="파일 보내기" Style="{StaticResource BarButton}" Click="SendFile_Click"
+                            ToolTip="이 PC 의 파일을 골라 상대 PC 로 보냅니다. (상대 PC 의 다운로드\MultiPcKvm 폴더)" />
+                    <Button Content="파일 받기" Style="{StaticResource BarButton}" Click="RequestFile_Click"
+                            ToolTip="상대 PC 화면에 파일 고르기 창을 띄웁니다. 골라서 받으면 이 PC 의 다운로드\MultiPcKvm 폴더에 저장됩니다." />
+                </StackPanel>
+
+                <!-- 파일 전송 상태 (보내는 중 45%, 받음 등) -->
+                <TextBlock x:Name="TransferText"
+                           Foreground="#D1D5DB" FontSize="12"
+                           VerticalAlignment="Center" Margin="6,0,0,0"
+                           TextTrimming="CharacterEllipsis" />
+            </DockPanel>
+        </Border>
+
+        <!-- ── 상대 화면 ── -->
+        <!-- Stretch="Uniform" = 비율을 유지한 채 창에 맞춘다. (남는 곳은 검은 띠) -->
+        <Image x:Name="ScreenImage"
+               Grid.Row="1"
+               Stretch="Uniform"
+               RenderOptions.BitmapScalingMode="Linear"
+               Cursor="Arrow"
+               MouseMove="ScreenImage_MouseMove"
+               MouseDown="ScreenImage_MouseDown"
+               MouseUp="ScreenImage_MouseUp"
+               MouseWheel="ScreenImage_MouseWheel" />
+
+        <!-- 상태 안내 (연결 중, 영상 기능 없음, 멈춤 이유 등). 화면이 오면 숨긴다. -->
+        <TextBlock x:Name="StatusText"
+                   Grid.Row="1"
+                   Text="화면을 받는 중..."
+                   Foreground="#D1D5DB" FontSize="14"
+                   TextAlignment="Center" TextWrapping="Wrap"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Margin="24" IsHitTestVisible="False" />
+
+        <!-- ── 전체 화면 막대 (맨 위 가운데) ──
+             평소에는 숨어 있다가 마우스를 화면 맨 위 끝에 대면 나온다. (원격 데스크톱의 연결 막대와 같은 방식)
+             늘 떠 있으면 그 아래 있는 상대 화면(창 제목줄 등)을 누를 수 없어서 숨긴다.
+             전체 화면에 막 들어갔을 때와 파일 전송 상태가 바뀔 때는 잠깐 보여준다. -->
+        <Border x:Name="FullScreenBar"
+                Grid.Row="1"
+                Visibility="Collapsed"
+                HorizontalAlignment="Center" VerticalAlignment="Top"
+                Background="#E61F2937" CornerRadius="0,0,8,8" Padding="8,6"
+                MouseLeave="FullScreenBar_MouseLeave">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="창 모드" Style="{StaticResource BarButton}" Click="FullScreen_Click" />
+                    <Button Content="파일 보내기" Style="{StaticResource BarButton}" Click="SendFile_Click" />
+                    <Button Content="파일 받기" Style="{StaticResource BarButton}" Click="RequestFile_Click" Margin="0" />
+                </StackPanel>
+
+                <TextBlock x:Name="BarTransferText"
+                           Foreground="#D1D5DB" FontSize="11"
+                           HorizontalAlignment="Center" Margin="0,4,0,0"
+                           MaxWidth="480" TextTrimming="CharacterEllipsis"
+                           Visibility="Collapsed" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

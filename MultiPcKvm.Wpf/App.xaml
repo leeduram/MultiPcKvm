@@ -1,0 +1,21 @@
+﻿<Application x:Class="MultiPcKvm.Wpf.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:MultiPcKvm.Wpf"
+             Startup="App_Startup"
+             SessionEnding="App_SessionEnding"
+             ShutdownMode="OnExplicitShutdown">
+    <!--
+        시작 방식
+          예전에는 StartupUri="MainWindow.xaml" 로 창을 바로 띄웠다.
+          이제는 "Windows 자동 실행 + 트레이에 숨긴 채로 시작" 이면 창을 띄우지 않아야 해서
+          App.xaml.cs 의 App_Startup 에서 직접 정한다.
+
+        ShutdownMode="OnExplicitShutdown"
+          창을 숨겨도(트레이) 프로그램이 꺼지지 않게 한다.
+          끄는 건 MainWindow.ExitApp 이 직접 한다.
+    -->
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>

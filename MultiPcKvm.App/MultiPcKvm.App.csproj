@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 라이브러리다. (WPF 가 참조해서 쓴다)
+         예전에는 개발·시험용 콘솔 프로그램(Exe)이었는데, 그러면 배포 폴더에 MultiPcKvm.App.exe 가 같이 들어가서
+         사용자가 잘못 실행할 수 있었다. 시험용 Program.cs 는 지웠다.
+         DB 시연은 Storage/DeviceStoreDemo.Run, 저장소 검사는 MultiPcKvm.Tests 프로젝트에서 한다. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- 로컬 DB (신뢰 기기 저장). 3주차 기술 명세서에서 정한 SQLite.
+       VS 가 빌드할 때 NuGet 에서 자동으로 받아온다. 따로 설치할 필요 없다. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MultiPcKvm.Common\MultiPcKvm.Common.csproj" />
+    <ProjectReference Include="..\MultiPcKvm.Network\MultiPcKvm.Network.csproj" />
+    <ProjectReference Include="..\MultiPcKvm.Windows\MultiPcKvm.Windows.csproj" />
+  </ItemGroup>
+
+</Project>

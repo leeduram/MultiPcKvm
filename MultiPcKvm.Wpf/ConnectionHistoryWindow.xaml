@@ -1,0 +1,142 @@
+<Window x:Class="MultiPcKvm.Wpf.ConnectionHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="연결 기록"
+        Height="560" Width="820" MinHeight="420" MinWidth="680"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F6F8"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <!--
+        연결 기록 창 (8주차)
+
+        위   : 상태 탭 [전체 / 연결 중 / 종료] · 정렬 · 검색창 · [새로 고침](F5)
+        가운데: 연결 기록 표 (불러오는 중 / 결과 없음 / 오류 안내가 표 위에 겹쳐 뜬다)
+        아래 : [이전] 1 2 3 [다음] · 전체 개수 · 지금 조건(page=1&...)
+
+        동작은 ConnectionHistoryWindow.xaml.cs, 데이터 요청은 ConnectionHistoryClient.cs 에 있다.
+    -->
+
+    <Window.Resources>
+        <!-- 상태 탭: 라디오 버튼을 눌린/안 눌린 버튼 모양으로 보이게 한다. (하나만 눌림) -->
+        <Style x:Key="Tab" TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Padding" Value="14,5" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+            <Setter Property="GroupName" Value="Status" />
+        </Style>
+
+        <!-- 페이지 번호 버튼 -->
+        <Style x:Key="PageButton" TargetType="Button">
+            <Setter Property="MinWidth" Value="30" />
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="Margin" Value="2,0" />
+        </Style>
+    </Window.Resources>
+
+    <Border Background="White" CornerRadius="8" Margin="14"
+            BorderBrush="#E3E5E9" BorderThickness="1" Padding="16,14">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- ═══ 위: 상태 탭 · 정렬 · 검색 ═══════════════════ -->
+            <Grid Grid.Row="0" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <RadioButton x:Name="TabAll" Content="전체" Style="{StaticResource Tab}"
+                                 Tag="all" IsChecked="True" Checked="StatusTab_Checked" />
+                    <RadioButton x:Name="TabOpen" Content="연결 중" Style="{StaticResource Tab}"
+                                 Tag="open" Checked="StatusTab_Checked" />
+                    <RadioButton x:Name="TabClosed" Content="종료" Style="{StaticResource Tab}"
+                                 Tag="closed" Checked="StatusTab_Checked" />
+                </StackPanel>
+
+                <!-- 정렬. Tag 가 실제로 넘기는 값이다. (ConnectionQuery.Sort) -->
+                <ComboBox x:Name="SortBox" Grid.Column="2" Width="130" Margin="0,0,8,0"
+                          VerticalAlignment="Center" SelectedIndex="0"
+                          SelectionChanged="SortBox_SelectionChanged">
+                    <ComboBoxItem Content="최신순" Tag="connectedAt,desc" />
+                    <ComboBoxItem Content="오래된 순" Tag="connectedAt,asc" />
+                    <ComboBoxItem Content="기기 이름순" Tag="device,asc" />
+                    <ComboBoxItem Content="평균 지연 큰 순" Tag="latency,desc" />
+                    <ComboBoxItem Content="메시지 많은 순" Tag="messages,desc" />
+                </ComboBox>
+
+                <!-- 검색창. Enter 또는 [검색] → 1페이지부터 다시. 길이 제한은 ConnectionQuery 와 같게 50자 -->
+                <TextBox x:Name="KeywordBox" Grid.Column="3" Width="190" MaxLength="50"
+                         VerticalContentAlignment="Center" Padding="4,3"
+                         KeyDown="KeywordBox_KeyDown"
+                         ToolTip="기기 이름 또는 끊긴 이유로 찾습니다 (Enter)" />
+
+                <Button Grid.Column="4" Content="검색" Padding="12,4" Margin="6,0,0,0"
+                        Click="SearchButton_Click" />
+
+                <!-- 창을 열어 둔 사이 새로 생긴 연결도 보이게 지금 페이지를 다시 읽는다. (F5 도 같음) -->
+                <Button Grid.Column="5" Content="새로 고침" Padding="10,4" Margin="6,0,0,0"
+                        ToolTip="지금 조건으로 다시 불러옵니다 (F5)"
+                        Click="RefreshButton_Click" />
+            </Grid>
+
+            <!-- ═══ 가운데: 표 + 겹쳐 뜨는 안내 ════════════════ -->
+            <Grid Grid.Row="1">
+                <!-- 줄을 더블클릭하면 그 기기의 상세 창이 열린다. (10주차) -->
+                <ListView x:Name="HistoryList" BorderBrush="#E3E5E9"
+                          ToolTip="줄을 더블클릭하면 기기 상세를 봅니다"
+                          MouseDoubleClick="HistoryList_MouseDoubleClick">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="기기" Width="130" DisplayMemberBinding="{Binding DeviceName}" />
+                            <GridViewColumn Header="연결 시각" Width="130" DisplayMemberBinding="{Binding ConnectedText}" />
+                            <GridViewColumn Header="끊긴 시각" Width="130" DisplayMemberBinding="{Binding DisconnectedText}" />
+                            <GridViewColumn Header="끊긴 이유" Width="150" DisplayMemberBinding="{Binding ReasonText}" />
+                            <GridViewColumn Header="평균 지연" Width="80" DisplayMemberBinding="{Binding LatencyText}" />
+                            <GridViewColumn Header="메시지" Width="80" DisplayMemberBinding="{Binding MessageText}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <!-- 불러오는 중 / 결과 없음 / 오류. 셋 중 하나만 보인다. (코드에서 ShowNotice) -->
+                <Border x:Name="NoticePanel" Background="#F9FAFB" Visibility="Collapsed"
+                        Margin="1,28,1,1">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock x:Name="NoticeText" FontSize="14" Foreground="#6B7280"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock x:Name="NoticeDetail" FontSize="11" Foreground="#9098A5"
+                                   HorizontalAlignment="Center" Margin="0,6,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ═══ 아래: 페이지 버튼 ════════════════════════════ -->
+            <Grid Grid.Row="2" Margin="0,10,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="PrevButton" Content="◀ 이전" Padding="10,3" Margin="0,0,6,0"
+                            IsEnabled="False" Click="PrevButton_Click" />
+                    <StackPanel x:Name="PageNumbers" Orientation="Horizontal" />
+                    <Button x:Name="NextButton" Content="다음 ▶" Padding="10,3" Margin="6,0,0,0"
+                            IsEnabled="False" Click="NextButton_Click" />
+                </StackPanel>
+
+                <TextBlock x:Name="CountText" HorizontalAlignment="Right" VerticalAlignment="Center"
+                           FontSize="11" Foreground="#6B7280" />
+            </Grid>
+
+            <!-- 지금 조건. 웹의 주소창 쿼리스트링(?page=2...) 자리 -->
+            <TextBlock x:Name="QueryText" Grid.Row="3" Margin="0,8,0,0"
+                       FontSize="11" Foreground="#9098A5" FontFamily="Consolas"
+                       TextTrimming="CharacterEllipsis" />
+        </Grid>
+    </Border>
+</Window>

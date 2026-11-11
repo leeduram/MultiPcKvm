@@ -1,0 +1,148 @@
+<Window x:Class="MultiPcKvm.Wpf.DeviceDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="기기 상세"
+        Height="620" Width="640" MinHeight="480" MinWidth="560"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F6F8"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <!--
+        기기 상세 창 (10주차)
+
+        메인 창 기기 목록에서 기기 이름을 더블클릭하거나, [연결 기록] 창에서 줄을 더블클릭하면 열린다.
+
+        위    : 기기 이름 · 지금 상태(조종 중 / 켜져 있음 / 꺼져 있음 …) · 기본 정보
+        버튼  : [연결]/[연결 끊기] · [화면 배치] · [삭제] · [새로 고침]
+                메인 창 기기 목록의 버튼과 같은 동작이다. 상태에 따라 켜지고 꺼진다.
+        가운데: 화면 배치 · 연결 통계 · 최근 연결 기록
+        아래  : 동작 결과 알림 (3초 뒤 사라짐)
+
+        저장되지 않은(삭제된) 기기면 내용 대신 안내와 [목록으로] 버튼만 보인다.
+        동작은 DeviceDetailWindow.xaml.cs 에 있다.
+    -->
+
+    <Window.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="BorderBrush" Value="#E3E5E9" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#6B7280" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="12,5" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <!-- 꺼진 버튼에도 풍선 도움말(왜 꺼졌는지)이 뜨게 한다 -->
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ═══ 내용 ═══════════════════════════════════════ -->
+        <Grid x:Name="ContentPanel" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 이름 · 상태 · 기본 정보 · 버튼 -->
+            <Border Grid.Row="0" Style="{StaticResource Card}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="NameText" Text="..." FontSize="18" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <Border x:Name="StateBadge" CornerRadius="10" Padding="10,2" Margin="10,0,0,0"
+                                VerticalAlignment="Center" Background="#E5E7EB">
+                            <TextBlock x:Name="StateText" Text="..." FontSize="11" Foreground="#374151" />
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock x:Name="InfoText" Margin="0,6,0,0" FontSize="11" Foreground="#6B7280"
+                               TextWrapping="Wrap" />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button x:Name="ActionButton" Content="연결" MinWidth="80"
+                                Style="{StaticResource ActionButton}" Click="ActionButton_Click" />
+                        <Button x:Name="LayoutButton" Content="화면 배치"
+                                Style="{StaticResource ActionButton}" Click="LayoutButton_Click" />
+                        <Button x:Name="DeleteButton" Content="삭제"
+                                Style="{StaticResource ActionButton}" Click="DeleteButton_Click" />
+                        <Button Content="새로 고침" Style="{StaticResource ActionButton}"
+                                ToolTip="DB 에서 다시 읽어 옵니다 (F5)" Click="RefreshButton_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 화면 배치 -->
+            <Border Grid.Row="1" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="화면 배치" Style="{StaticResource SectionTitle}" />
+                    <TextBlock x:Name="LayoutText" Text="..." FontSize="12" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- 연결 통계 -->
+            <Border Grid.Row="2" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="연결 통계" Style="{StaticResource SectionTitle}" />
+                    <TextBlock x:Name="StatsText" Text="..." FontSize="12" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- 최근 연결 기록 -->
+            <Border Grid.Row="3" Style="{StaticResource Card}" Margin="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="RecentTitle" Text="최근 연결 기록" Style="{StaticResource SectionTitle}" />
+                    <ListView x:Name="RecentList" Grid.Row="1" BorderBrush="#E3E5E9">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="연결 시각" Width="120" DisplayMemberBinding="{Binding ConnectedText}" />
+                                <GridViewColumn Header="끊긴 시각" Width="120" DisplayMemberBinding="{Binding DisconnectedText}" />
+                                <GridViewColumn Header="끊긴 이유" Width="150" DisplayMemberBinding="{Binding ReasonText}" />
+                                <GridViewColumn Header="평균 지연" Width="75" DisplayMemberBinding="{Binding LatencyText}" />
+                                <GridViewColumn Header="메시지" Width="70" DisplayMemberBinding="{Binding MessageText}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- ═══ 불러오는 중 / 없는 기기 / 오류 — 내용 대신 보인다 ═══ -->
+        <Border x:Name="NoticePanel" Grid.Row="0" Background="White" CornerRadius="8"
+                BorderBrush="#E3E5E9" BorderThickness="1" Visibility="Collapsed">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock x:Name="NoticeText" FontSize="15" Foreground="#374151" HorizontalAlignment="Center" />
+                <TextBlock x:Name="NoticeDetail" FontSize="11" Foreground="#9098A5" HorizontalAlignment="Center"
+                           Margin="0,6,0,0" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="420" />
+                <Button x:Name="BackButton" Content="목록으로" Padding="14,5" Margin="0,14,0,0"
+                        HorizontalAlignment="Center" Visibility="Collapsed" Click="BackButton_Click" />
+            </StackPanel>
+        </Border>
+
+        <!-- ═══ 아래: 동작 결과 알림 (토스트) ════════════════ -->
+        <Border x:Name="ToastPanel" Grid.Row="1" Margin="0,10,0,0" Padding="12,7" CornerRadius="6"
+                Background="#1F2937" Visibility="Collapsed">
+            <TextBlock x:Name="ToastText" Foreground="White" FontSize="12" TextWrapping="Wrap" />
+        </Border>
+    </Grid>
+</Window>

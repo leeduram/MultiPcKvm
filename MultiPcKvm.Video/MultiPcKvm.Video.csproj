@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 라이브러리로 바꿨다. (WPF 가 참조해서 쓴다)
+         ScreenShareFactory 에서 ScreenViewer / ScreenSharer / FileTransferEngine 을 만든다. -->
+
+    <!-- 지금 화면 캡처는 GDI(BitBlt) 로 해서 WinRT 가 필요 없다.
+         그래서 Wpf 와 같은 net10.0-windows 로 두었다. (Wpf 의 TargetFramework 를 올리지 않아도 된다)
+         나중에 Windows Graphics Capture / H.264 로 바꾸면
+         net10.0-windows10.0.19041.0 으로 올리고 Wpf 도 같이 올린다. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- 캡처 메모리(GDI 비트맵)를 복사하지 않고 바로 비교하려고 포인터를 쓴다.
+         (GdiScreenCapture.Pixels 한 곳뿐) -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MultiPcKvm.Common\MultiPcKvm.Common.csproj" />
+    <!-- 169.254 어댑터가 여럿일 때 나갈 어댑터를 고르는 LocalRoutes 를 쓴다. -->
+    <ProjectReference Include="..\MultiPcKvm.Network\MultiPcKvm.Network.csproj" />
+  </ItemGroup>
+
+</Project>

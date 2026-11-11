@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+
+    <!-- 트레이 아이콘(NotifyIcon) 때문에 켠다. 아래 ItemGroup 설명 참고. -->
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <!-- 화면 배율과 실행 권한을 지정한 파일.
+         내용 설명은 app.manifest 안에 적어뒀다. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <!-- WinForms 는 트레이 아이콘(NotifyIcon) 하나 때문에 켠다.
+       WPF 에는 트레이 아이콘이 없다.
+       WinForms 를 켜면 System.Windows.Forms / System.Drawing 이 자동으로 using 되는데,
+       Application·Point·MouseEventArgs 같은 이름이 WPF 것과 겹쳐서 빌드가 깨진다.
+       그래서 자동 using 은 빼고, 트레이 코드에서만 전체 이름(System.Windows.Forms.NotifyIcon)으로 쓴다. -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <!-- 삭제 프로그램 Uninstall.exe 만들기.
+       실행 파일(MultiPcKvm.Wpf.exe)을 이름만 바꿔 복사한다. 이름이 Uninstall 이면 삭제 모드로 켜진다. (Uninstaller.cs)
+       빌드(bin 폴더)와 게시(배포 폴더) 둘 다 만든다.
+       (게시 방법에 따라 빠지더라도, 프로그램이 처음 켜질 때 없으면 만든다. Uninstaller.EnsureUninstallExe)
+       ※ 게시할 때 "단일 파일" 은 켜지 말 것. 단일 파일이면 프로그램 전체가 한 번 더 복사되어 크기가 두 배가 된다. -->
+  <Target Name="MakeUninstallExeAfterBuild" AfterTargets="Build"
+          Condition="Exists('$(OutDir)$(AssemblyName).exe')">
+    <Copy SourceFiles="$(OutDir)$(AssemblyName).exe" DestinationFiles="$(OutDir)Uninstall.exe" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="MakeUninstallExeAfterPublish" AfterTargets="Publish;FileSystemPublish"
+          Condition="Exists('$(PublishDir)$(AssemblyName).exe')">
+    <Copy SourceFiles="$(PublishDir)$(AssemblyName).exe" DestinationFiles="$(PublishDir)Uninstall.exe" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MultiPcKvm.App\MultiPcKvm.App.csproj" />
+    <ProjectReference Include="..\MultiPcKvm.Common\MultiPcKvm.Common.csproj" />
+    <ProjectReference Include="..\MultiPcKvm.Network\MultiPcKvm.Network.csproj" />
+    <!-- 화면 보기·파일 전송 (김기령님). ScreenShareFactory 에서 만든다. -->
+    <ProjectReference Include="..\MultiPcKvm.Video\MultiPcKvm.Video.csproj" />
+    <ProjectReference Include="..\MultiPcKvm.Windows\MultiPcKvm.Windows.csproj" />
+  </ItemGroup>
+
+</Project>

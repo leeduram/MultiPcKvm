@@ -1,0 +1,101 @@
+<Window x:Class="MultiPcKvm.Wpf.LayoutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="화면 배치"
+        Height="470" Width="540"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F5F6F8">
+
+    <!--
+        화면 배치 창
+
+        내 PC 화면(파랑)은 가운데에 고정되어 있고,
+        상대 PC 화면(초록)을 마우스로 끌어서 아무 데나 놓는다.
+        놓으면 내 화면 옆에 가장 가까운 자리로 달라붙는다. (두 화면은 반드시 맞닿는다)
+
+        네모 크기는 실제 해상도 비율대로 그린다.
+        끄는 동안 점선 네모가 "놓으면 붙을 자리" 를 미리 보여준다.
+
+        동작은 LayoutWindow.xaml.cs 에 있다.
+    -->
+
+    <Border Background="White" CornerRadius="8" Margin="14"
+            BorderBrush="#E3E5E9" BorderThickness="1" Padding="18,16">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock x:Name="TitleText" Grid.Row="0" Text="..."
+                       FontSize="15" FontWeight="SemiBold" />
+
+            <TextBlock Grid.Row="1" Margin="0,6,0,10" TextWrapping="Wrap"
+                       FontSize="11" Foreground="#9098A5"
+                       Text="초록색 상대 PC 화면을 끌어서 원하는 자리에 놓으세요. 놓으면 내 화면 옆에 붙습니다. 커서는 두 화면이 맞닿은 부분으로만 넘어갑니다." />
+
+            <!-- 배치판. 크기를 고정해 두고 그 안에 비율대로 줄여 그린다. -->
+            <Border Grid.Row="2" Background="#F1F3F6" CornerRadius="6"
+                    BorderBrush="#E3E5E9" BorderThickness="1">
+                <Canvas x:Name="Board" Width="466" Height="250" ClipToBounds="True">
+
+                    <!-- 놓으면 붙을 자리 미리보기 (끄는 동안만 보인다) -->
+                    <Border x:Name="GhostBox" Visibility="Collapsed"
+                            BorderBrush="#22C55E" BorderThickness="2"
+                            Background="#1022C55E" CornerRadius="3" />
+
+                    <!-- 내 PC 화면 (고정) -->
+                    <Border x:Name="LocalBox"
+                            Background="#DBEAFE" BorderBrush="#60A5FA" BorderThickness="2"
+                            CornerRadius="3">
+                        <TextBlock x:Name="LocalText" Text="내 PC"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   TextAlignment="Center" FontSize="11" Foreground="#1E3A8A" />
+                    </Border>
+
+                    <!-- 상대 PC 화면 (끌 수 있음) -->
+                    <Border x:Name="RemoteBox"
+                            Background="#DCFCE7" BorderBrush="#22C55E" BorderThickness="2"
+                            CornerRadius="3" Cursor="SizeAll"
+                            MouseLeftButtonDown="RemoteBox_MouseLeftButtonDown"
+                            MouseMove="RemoteBox_MouseMove"
+                            MouseLeftButtonUp="RemoteBox_MouseLeftButtonUp"
+                            LostMouseCapture="RemoteBox_LostMouseCapture">
+                        <TextBlock x:Name="RemoteText" Text="상대 PC"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   TextAlignment="Center" FontSize="11" Foreground="#14532D" />
+                    </Border>
+
+                </Canvas>
+            </Border>
+
+            <!-- 지금 배치 설명 (예: 오른쪽 · 300 픽셀 아래로) -->
+            <TextBlock x:Name="PositionText" Grid.Row="3" Margin="0,10,0,0"
+                       FontSize="12" Foreground="#374151" Text="..." />
+
+            <Grid Grid.Row="4" Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" HorizontalAlignment="Left"
+                        Content="처음 위치로" Padding="10,6"
+                        ToolTip="내 화면 왼쪽, 가운데 맞춘 자리로 되돌립니다"
+                        Click="Reset_Click" />
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="취소" Width="70" Padding="0,6"
+                            Margin="0,0,8,0" IsCancel="True" Click="Cancel_Click" />
+                    <Button Content="저장" Width="70" Padding="0,6"
+                            IsDefault="True" Click="Save_Click" />
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+    </Border>
+</Window>
