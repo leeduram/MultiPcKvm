@@ -5,6 +5,22 @@
 같은 네트워크(공유기·랜선 직결)에 있는 Windows PC 두 대를 키보드·마우스 하나로 조종한다.
 커서를 화면 끝으로 밀면 상대 PC 로 넘어가고, 상대 화면을 창으로 보면서 조종하거나 파일을 주고받을 수 있다.
 
+## 화면
+
+| 메인 창 | 연결 코드 입력 |
+|---|---|
+| <img src="screenshots/main.png" width="320"> | <img src="screenshots/pairing.png" width="320"> |
+| 주변 기기 목록. 연결되면 해상도와 지연 시간이 표시된다 | 처음 연결할 때 상대 PC 의 4자리 코드를 입력한다 |
+
+| 화면 배치 | 연결 기록 |
+|---|---|
+| <img src="screenshots/layout.png" width="400"> | <img src="screenshots/history.png" width="400"> |
+| 상대 PC 화면을 끌어서 내 화면 옆에 놓는다 | 상태별 보기, 정렬, 검색 |
+
+**화면 보기** — 상대 PC 화면을 창으로 보면서 조종한다.
+
+<img src="screenshots/viewer.png" width="720">
+
 ## 프로젝트 구조
 
 ```
